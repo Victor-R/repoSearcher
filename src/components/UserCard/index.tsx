@@ -4,7 +4,7 @@ import { Container, Avatar, Name } from "./styles";
 type Props = {
   imageUrl: string;
   name: string;
-  active: boolean;
+  active?: boolean;
 };
 
 export function UserCard({
