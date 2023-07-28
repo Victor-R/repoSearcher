@@ -34,4 +34,10 @@ export const Content = styled.div`
   height: 90vh;
 
   overflow-y: auto;
+
+  & > svg {
+    margin: 0 auto;
+    width: 50px;
+    height: 50px;
+  }
 `;

@@ -1,8 +1,9 @@
-import { useCallback, useState, useDeferredValue, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { SearchBar } from "../../components/SearchBar";
-import { Container, Menu, Content } from "./styles";
 import { RepoCard } from "../../components/RepoCard";
 import { UserCard } from "../../components/UserCard";
+import { Container, Menu, Content } from "./styles";
+import { Loading } from "../../components/Loading/Loading";
 
 type Repo = {
   id: number;
@@ -25,41 +26,48 @@ type Result<T> = {
 export function Home() {
   const [repoList, setRepoList] = useState<Repo[]>([]);
   const [usersList, setUsersList] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingRepos, setLoadingRepos] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
-  const [term, setTerm] = useState("");
-
-  const deferredTerm = useDeferredValue(term);
 
   const getUserRepositories = useCallback(async (username: string) => {
-    const response = await fetch(
-      `https://api.github.com/users/${username}/repos`
-    );
+    try {
+      setLoadingRepos(true);
+      const response = await fetch(
+        `https://api.github.com/users/${username}/repos`
+      );
 
-    const repos: Repo[] = await response.json();
+      const repos: Repo[] = await response.json();
 
-    setRepoList(repos);
+      setRepoList(repos);
+      setLoadingRepos(false);
+    } catch (error) {
+      console.error(error);
+      setRepoList([]);
+      setLoadingRepos(false);
+    }
   }, []);
 
-  const searchUsers = useCallback(async () => {
-    if (deferredTerm.length > 0) {
+  const searchUsers = async (searchTerm: string) => {
+    if (searchTerm.length > 0) {
+      setLoadingUsers(true);
       try {
         const response = await fetch(
-          `https://api.github.com/search/users?q=${deferredTerm}&per_page=7`
+          `https://api.github.com/search/users?q=${searchTerm}&per_page=7`
         );
 
         const users: User[] = ((await response.json()) as Result<User>).items;
+
+        setLoadingUsers(false);
 
         setUsersList(users ?? []);
       } catch (error) {
         console.error(error);
         setUsersList([]);
+        setLoadingUsers(false);
       }
     }
-  }, [deferredTerm]);
-
-  useEffect(() => {
-    searchUsers();
-  }, [deferredTerm, searchUsers]);
+  };
 
   useEffect(() => {
     if (selectedUser) {
@@ -72,8 +80,10 @@ export function Home() {
       <Menu>
         <SearchBar
           placeholder="Search for users..."
-          value={term}
-          onChange={(event) => setTerm(event.currentTarget.value)}
+          onSearchUpdate={(query) => {
+            searchUsers(query);
+          }}
+          loading={loadingUsers}
         />
         {usersList.map((user) => (
           <UserCard
@@ -86,6 +96,7 @@ export function Home() {
         ))}
       </Menu>
       <Content>
+        {loadingRepos && <Loading />}
         {repoList.map(({ id, name, description, html_url }) => (
           <RepoCard
             key={id}
