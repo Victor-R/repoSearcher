@@ -4,6 +4,7 @@ import { RepoCard } from "../../components/RepoCard";
 import { UserCard } from "../../components/UserCard";
 import { Container, Menu, Content } from "./styles";
 import { Loading } from "../../components/Loading/Loading";
+import { toast } from "react-toastify";
 
 type Repo = {
   id: number;
@@ -42,7 +43,10 @@ export function Home() {
       setRepoList(repos);
       setLoadingRepos(false);
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      toast.error(
+        (error as { message: string })?.message || "Error loading repositories"
+      );
       setRepoList([]);
       setLoadingRepos(false);
     }
@@ -62,7 +66,10 @@ export function Home() {
 
         setUsersList(users ?? []);
       } catch (error) {
-        console.error(error);
+        console.log(error);
+        toast.error(
+          (error as { message: string })?.message || "Error loading users"
+        );
         setUsersList([]);
         setLoadingUsers(false);
       }
