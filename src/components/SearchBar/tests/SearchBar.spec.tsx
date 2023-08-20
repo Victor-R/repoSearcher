@@ -3,7 +3,7 @@ import { SearchBar } from "..";
 
 describe("Components: SearchBar", () => {
   it("should match snapshot", () => {
-    const { container } = render(<SearchBar />);
+    const { container } = render(<SearchBar onSearchUpdate={jest.fn()} />);
 
     expect(container).toMatchSnapshot();
   });
