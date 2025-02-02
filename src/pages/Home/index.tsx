@@ -40,13 +40,13 @@ export function Home() {
 
       const repos: Repo[] = await response.json();
 
+      if (!response.ok) throw new Error("Error loading repositories");
+
       setRepoList(repos);
       setLoadingRepos(false);
     } catch (error) {
       console.log(error);
-      toast.error(
-        (error as { message: string })?.message || "Error loading repositories"
-      );
+      toast.error("Error loading repositories");
       setRepoList([]);
       setLoadingRepos(false);
     }
@@ -60,16 +60,19 @@ export function Home() {
           `https://api.github.com/search/users?q=${searchTerm}&per_page=7`
         );
 
-        const users: User[] = ((await response.json()) as Result<User>).items;
+        console.log(response.status);
+        if (response.status !== 200) throw new Error("Error loading users");
+
+        const responseJson = await response.json();
+
+        const users: User[] = (responseJson as Result<User>).items;
 
         setLoadingUsers(false);
 
         setUsersList(users ?? []);
       } catch (error) {
         console.log(error);
-        toast.error(
-          (error as { message: string })?.message || "Error loading users"
-        );
+        toast.error("Error loading users");
         setUsersList([]);
         setLoadingUsers(false);
       }
@@ -86,6 +89,7 @@ export function Home() {
     <Container>
       <Menu>
         <SearchBar
+          data-cy="search-bar"
           placeholder="Search for users..."
           onSearchUpdate={(query) => {
             searchUsers(query);
@@ -95,6 +99,7 @@ export function Home() {
         {usersList.map((user) => (
           <UserCard
             key={user.id}
+            data-cy="user-card"
             imageUrl={user.avatar_url}
             active={selectedUser?.id === user.id}
             name={user.login}

@@ -9,7 +9,7 @@ type Props = {
 
 export function RepoCard({ title, description, link }: Props) {
   return (
-    <Container to={link}>
+    <Container href={link}>
       <GoRepo />
       <div>
         <Title>{title}</Title>

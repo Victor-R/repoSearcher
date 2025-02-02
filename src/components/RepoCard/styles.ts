@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-export const Container = styled(Link)`
+export const Container = styled.a`
   background: white;
   padding: 25px 35px;
   transition: all 0.3s ease;
