@@ -1,10 +1,10 @@
 import { Home } from "./pages/Home";
 import "react-toastify/dist/ReactToastify.css";
 import { GlobalStyle } from "./global.ts";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createMemoryRouter } from "react-router";
 import { ToastContainer } from "react-toastify";
 
-const router = createBrowserRouter([
+export const router = createMemoryRouter([
   {
     path: "/",
     element: <Home />,
@@ -20,7 +20,6 @@ function App() {
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
-        rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
